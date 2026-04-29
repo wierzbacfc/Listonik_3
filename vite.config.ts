@@ -13,7 +13,7 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon-192.png', 'icon-512.png'],
+        includeAssets: ['icon-144.png', 'icon-192.png', 'icon-512.png'],
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
@@ -24,22 +24,25 @@ export default defineConfig(({mode}) => {
           start_url: '.',
           icons: [
             {
+              src: 'icon-144.png',
+              sizes: '144x144',
+              type: 'image/png'
+            },
+            {
               src: 'icon-192.png',
               sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any'
+              type: 'image/png'
+            },
+            {
+              src: 'icon-512.png',
+              sizes: '512x512',
+              type: 'image/png'
             },
             {
               src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any'
-            },
-            {
-              src: 'icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable'
+              purpose: 'any maskable'
             }
           ]
         }

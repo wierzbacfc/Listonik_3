@@ -7,9 +7,7 @@ function drawIcon(size) {
   
   // Background
   ctx.fillStyle = '#10b981'; // bg-emerald-500
-  ctx.beginPath();
-  ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillRect(0, 0, size, size);
 
   // Simple checkmark
   ctx.lineWidth = size * 0.12;
