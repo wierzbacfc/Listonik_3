@@ -4,7 +4,7 @@ import { ProductCard } from './components/ProductCard';
 import { ProductInput } from './components/ProductInput';
 import { SettingsModal } from './components/SettingsModal';
 import { ItemEditModal } from './components/ItemEditModal';
-import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2 } from 'lucide-react';
+import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 
@@ -15,6 +15,7 @@ export default function App() {
   const [isAddingList, setIsAddingList] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [listToDelete, setListToDelete] = useState<string | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const [listMenuContext, setListMenuContext] = useState<{ id: string, x: number, y: number } | null>(null);
   const [editingListId, setEditingListId] = useState<string | null>(null);
@@ -25,6 +26,23 @@ export default function App() {
   const wasDragged = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
   const onMouseDown = (e: React.MouseEvent) => {
     if (!scrollContainerRef.current) return;
@@ -188,12 +206,23 @@ export default function App() {
             ))}
           </div>
 
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors shrink-0"
-          >
-            <Settings size={22} />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            {deferredPrompt && (
+              <button
+                onClick={handleInstallClick}
+                className="p-2 rounded-full text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+                title="Zainstaluj aplikację na urządzeniu"
+              >
+                <Download size={22} />
+              </button>
+            )}
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            >
+              <Settings size={22} />
+            </button>
+          </div>
         </div>
       </header>
 

@@ -17,6 +17,9 @@ export default defineConfig(({mode}) => {
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         includeAssets: ['icon-144.png', 'icon-192.png', 'icon-512.png'],
+        devOptions: {
+          enabled: true
+        },
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
@@ -25,8 +28,8 @@ export default defineConfig(({mode}) => {
           scope: repoBase,
           id: repoBase,
           display: 'standalone',
-          background_color: '#09090b',
-          theme_color: '#09090b',
+          background_color: '#ffffff',
+          theme_color: '#ffffff',
           icons: [
             {
               src: 'icon-144.png',
@@ -36,13 +39,20 @@ export default defineConfig(({mode}) => {
             {
               src: 'icon-192.png',
               sizes: '192x192',
-              type: 'image/png'
+              type: 'image/png',
+              purpose: 'any'
             },
             {
               src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable'
+              purpose: 'any'
+            },
+            {
+              src: 'icon-512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable'
             }
           ]
         }
