@@ -16,7 +16,6 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['favicon.svg'],
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
@@ -41,10 +40,6 @@ export default defineConfig(({mode}) => {
               purpose: 'any maskable'
             }
           ]
-        },
-        devOptions: {
-          enabled: true,
-          type: 'module'
         }
       })
     ],
