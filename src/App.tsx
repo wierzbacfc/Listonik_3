@@ -133,18 +133,18 @@ export default function App() {
     <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 flex flex-col font-sans transition-colors duration-300 relative">
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-4xl mx-auto px-4 w-full h-16 flex items-center justify-between gap-3 relative">
+        <div className="max-w-4xl mx-auto px-4 w-full h-16 flex items-center justify-between gap-2 relative">
           
-          <div className="flex items-center">
+          <div className="flex items-center gap-2 pr-1 shrink-0">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsAddingList(true)}
-              className="p-2 mr-2 rounded-full bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
+              className="p-2 rounded-xl bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
             >
               <Plus size={22} />
             </motion.button>
-            <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 mr-2" />
+            <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 ml-1" />
           </div>
 
           <div 
@@ -153,7 +153,8 @@ export default function App() {
             onMouseLeave={onMouseLeave}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
-            className="flex-1 overflow-x-auto flex items-center gap-2 no-scrollbar touch-pan-x pl-1 pr-2 py-1 h-full cursor-grab active:cursor-grabbing select-none"
+            style={{ maskImage: 'linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent)' }}
+            className="flex-1 overflow-x-auto flex items-center gap-2 no-scrollbar touch-pan-x pl-2 pr-4 py-1 h-full cursor-grab active:cursor-grabbing select-none"
           >
             {lists.map(list => (
               editingListId === list.id ? (
@@ -182,14 +183,14 @@ export default function App() {
               ) : (
                 <motion.button
                   key={list.id}
-                  whileHover={{ scale: currentListId === list.id ? 1.07 : 1.02 }}
+                  whileHover={{ scale: currentListId === list.id ? 1.05 : 1.02 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleListClick(e, list.id)}
                   className={cn(
-                    "whitespace-nowrap px-4 py-2 rounded-2xl transition-all duration-200 shrink-0 flex items-center gap-1.5 relative",
+                    "whitespace-nowrap px-4 py-2.5 rounded-xl border transition-all duration-200 shrink-0 flex items-center gap-1.5 relative shadow-sm text-sm font-display",
                     currentListId === list.id
-                      ? "bg-primary-500 text-white shadow-md font-bold scale-105"
-                      : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-sm font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      ? "bg-primary-500 border-primary-600 dark:border-primary-400 text-white font-semibold shadow-md"
+                      : "bg-white dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-300 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-200 dark:hover:border-primary-500/30 hover:text-primary-700 dark:hover:text-primary-300"
                   )}
                 >
                   {list.visibility === 'shared' ? <Users size={14} className="opacity-70" /> : <Lock size={14} className="opacity-70" />}

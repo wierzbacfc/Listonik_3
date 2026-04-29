@@ -53,9 +53,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onEdit }) => {
         <button 
           onClick={() => toggleItemPurchased(item.id)}
           className={cn(
-          "font-medium flex-1 truncate text-sm text-left align-middle",
+          "font-display font-medium flex-1 truncate text-base text-left align-middle",
           item.purchased ? "line-through text-zinc-400 dark:text-zinc-500" : "text-zinc-900 dark:text-zinc-100",
-          item.urgent && !item.purchased && "text-red-700 dark:text-red-400 font-bold"
+          item.urgent && !item.purchased && "text-red-700 dark:text-red-400 font-semibold"
         )}>
           {item.name}
         </button>
