@@ -7,7 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '', // Relative paths for GitHub Pages
+    base: './', // Relative paths for GitHub Pages
     plugins: [
       react(), 
       tailwindcss(),
