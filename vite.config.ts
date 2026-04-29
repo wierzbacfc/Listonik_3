@@ -4,44 +4,39 @@ import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const repoBase = process.env.GITHUB_REPOSITORY ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/` : '/';
+
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: './', // Relative paths for GitHub Pages
+    base: repoBase,
     plugins: [
       react(), 
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon-144.png', 'icon-192.png', 'icon-512.png'],
+        injectRegister: 'auto',
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
           description: 'Inteligentna lista zakupów',
-          theme_color: '#ffffff',
-          background_color: '#ffffff',
+          start_url: repoBase,
+          scope: repoBase,
+          id: repoBase,
           display: 'standalone',
-          start_url: '.',
+          background_color: '#09090b',
+          theme_color: '#09090b',
           icons: [
             {
-              src: 'icon-144.png',
-              sizes: '144x144',
-              type: 'image/png'
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'any maskable'
             },
             {
-              src: 'icon-192.png',
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
               sizes: '192x192',
-              type: 'image/png'
-            },
-            {
-              src: 'icon-512.png',
-              sizes: '512x512',
-              type: 'image/png'
-            },
-            {
-              src: 'icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
+              type: 'image/svg+xml',
               purpose: 'any maskable'
             }
           ]
