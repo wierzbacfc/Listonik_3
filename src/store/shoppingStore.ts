@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import { Category, CatalogItem, initialCatalog } from '../data/catalog';
 
-export type PromoType = 'Brak' | 'Zniżka' | '2 w 1' | '3 w 2' | 'Kupon';
+export type PromoType = 'Brak' | '1+1' | '2+1' | '2+2' | 'Karta' | 'Kupon';
 
 export interface ShoppingItem {
   id: string;

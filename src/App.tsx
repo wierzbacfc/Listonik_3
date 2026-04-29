@@ -112,7 +112,7 @@ export default function App() {
     <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 flex flex-col font-sans transition-colors duration-300 relative">
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-4xl mx-auto px-2 w-full h-12 flex items-center justify-between gap-2 relative">
+        <div className="max-w-4xl mx-auto px-4 w-full h-16 flex items-center justify-between gap-3 relative">
           
           <div className="flex items-center">
             {isAddingList ? (
@@ -130,9 +130,9 @@ export default function App() {
             ) : (
               <button
                 onClick={() => setIsAddingList(true)}
-                className="p-1.5 mr-2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
+                className="p-2 mr-2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
               >
-                <Plus size={18} />
+                <Plus size={22} />
               </button>
             )}
             {!isAddingList && <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 mr-2" />}
@@ -144,7 +144,7 @@ export default function App() {
             onMouseLeave={onMouseLeave}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
-            className="flex-1 overflow-x-auto flex items-center gap-1.5 no-scrollbar touch-pan-x pr-2 h-full cursor-grab active:cursor-grabbing select-none"
+            className="flex-1 overflow-x-auto flex items-center gap-2 no-scrollbar touch-pan-x pl-1 pr-2 py-1 h-full cursor-grab active:cursor-grabbing select-none"
           >
             {lists.map(list => (
               editingListId === list.id ? (
@@ -175,13 +175,13 @@ export default function App() {
                   key={list.id}
                   onClick={(e) => handleListClick(e, list.id)}
                   className={cn(
-                    "whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 flex items-center gap-1 relative",
+                    "whitespace-nowrap px-4 py-2 rounded-2xl transition-all duration-200 shrink-0 flex items-center gap-1.5 relative",
                     currentListId === list.id
-                      ? "bg-emerald-500 text-white shadow-sm"
-                      : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      ? "bg-emerald-500 text-white shadow-md font-bold scale-105"
+                      : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-sm font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800"
                   )}
                 >
-                  {list.visibility === 'shared' ? <Users size={12} className="opacity-70" /> : <Lock size={12} className="opacity-70" />}
+                  {list.visibility === 'shared' ? <Users size={14} className="opacity-70" /> : <Lock size={14} className="opacity-70" />}
                   {list.name}
                 </button>
               )
@@ -190,9 +190,9 @@ export default function App() {
 
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors shrink-0"
+            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors shrink-0"
           >
-            <Settings size={18} />
+            <Settings size={22} />
           </button>
         </div>
       </header>
@@ -290,24 +290,25 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="space-y-6"
+              className="space-y-4"
             >
-            <motion.div layout className="space-y-4">
-              <AnimatePresence mode="popLayout">
+            <motion.div layout className="space-y-2">
+              <AnimatePresence>
                 {Object.entries(groupedItems).map(([category, catItems]) => (
                   <motion.div 
-                    layout 
+                    layout
                     initial={{ opacity: 0, height: 0 }} 
                     animate={{ opacity: 1, height: 'auto' }} 
                     exit={{ opacity: 0, height: 0, overflow: 'hidden' }} 
+                    transition={{ duration: 0.2 }}
                     key={category} 
                     className="space-y-1"
                   >
-                    <h3 className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-1 sticky top-12 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-sm z-10 py-1">
+                    <motion.h3 layout className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-1 sticky top-12 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-sm z-10 py-1">
                       {category}
-                    </h3>
+                    </motion.h3>
                     <motion.div layout className="flex flex-col relative pb-1 gap-1">
-                      <AnimatePresence mode="popLayout">
+                      <AnimatePresence initial={false}>
                         {catItems.map(item => (
                           <ProductCard 
                             key={item.id} 
@@ -322,20 +323,21 @@ export default function App() {
               </AnimatePresence>
             </motion.div>
 
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {purchasedItems.length > 0 && (
                 <motion.div 
-                  layout 
+                  layout
                   initial={{ opacity: 0, height: 0 }} 
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                  transition={{ duration: 0.2 }}
                   className="pt-4 border-t border-zinc-200 dark:border-zinc-800"
                 >
-                  <h3 className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2">
+                  <motion.h3 layout className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2">
                     W koszyku
-                  </h3>
+                  </motion.h3>
                   <motion.div layout className="flex flex-col mb-4 relative pb-1 gap-1">
-                    <AnimatePresence mode="popLayout">
+                    <AnimatePresence initial={false}>
                       {purchasedItems.map(item => (
                         <ProductCard 
                           key={item.id} 
@@ -346,13 +348,14 @@ export default function App() {
                     </AnimatePresence>
                   </motion.div>
                   
-                  <button
+                  <motion.button
+                    layout
                     onClick={clearPurchased}
                     className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium"
                   >
                     <Trash2 size={16} />
                     Usuń kupione ({purchasedItems.length})
-                  </button>
+                  </motion.button>
                 </motion.div>
               )}
             </AnimatePresence>

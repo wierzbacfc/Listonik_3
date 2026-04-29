@@ -21,6 +21,8 @@ export const ProductInput: React.FC = () => {
   const handleAdd = async (name: string, predefinedCategory?: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;
+    
+    const capitalizedName = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 
     // Clear input immediately for UX
     setInput('');
@@ -28,14 +30,15 @@ export const ProductInput: React.FC = () => {
     inputRef.current?.focus();
 
     if (predefinedCategory) {
-      addItem(trimmed, predefinedCategory as any);
+      addItem(capitalizedName, predefinedCategory as any);
       return;
     }
 
     // 1. Initial catalog exact match
     const initialExactMatch = initialCatalog.find(c => c.name.toLowerCase() === trimmed.toLowerCase());
     if (initialExactMatch) {
-      addItem(initialExactMatch.name, initialExactMatch.category);
+      const matchName = initialExactMatch.name.charAt(0).toUpperCase() + initialExactMatch.name.slice(1);
+      addItem(matchName, initialExactMatch.category);
       return;
     }
 
@@ -46,14 +49,15 @@ export const ProductInput: React.FC = () => {
     );
 
     if (initialPartialMatch) {
-      addItem(trimmed, initialPartialMatch.category);
+      addItem(capitalizedName, initialPartialMatch.category);
       return;
     }
 
     // 3. User catalog exact match (we do this last so that bad previous entries like 'chleb' -> 'Inne' are overridden by initial partial match)
     const userExactMatch = userCatalog.find(c => c.name.toLowerCase() === trimmed.toLowerCase());
     if (userExactMatch) {
-      addItem(userExactMatch.name, userExactMatch.category);
+      const matchName = userExactMatch.name.charAt(0).toUpperCase() + userExactMatch.name.slice(1);
+      addItem(matchName, userExactMatch.category);
       return;
     }
     
@@ -62,14 +66,14 @@ export const ProductInput: React.FC = () => {
       setIsClassifying(true);
       try {
         const category = await classifyProductWithGemini(trimmed, preferences.geminiApiKey);
-        addToUserCatalog(trimmed, category);
-        addItem(trimmed, category);
+        addToUserCatalog(capitalizedName, category);
+        addItem(capitalizedName, category);
       } finally {
         setIsClassifying(false);
       }
     } else {
-      addToUserCatalog(trimmed, 'Inne');
-      addItem(trimmed, 'Inne');
+      addToUserCatalog(capitalizedName, 'Inne');
+      addItem(capitalizedName, 'Inne');
     }
   };
 
@@ -126,12 +130,8 @@ export const ProductInput: React.FC = () => {
         >
           {isClassifying ? (
             <Loader2 size={18} className="animate-spin" />
-          ) : suggestions.length > 0 ? (
-            <Plus size={20} />
-          ) : input.trim() && preferences.geminiApiKey ? (
-            <Sparkles size={18} />
           ) : (
-            <Send size={18} className="mr-0.5" />
+            <Plus size={22} />
           )}
         </button>
       </div>

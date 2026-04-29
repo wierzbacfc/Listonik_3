@@ -28,8 +28,8 @@ export const ItemEditModal: React.FC<ItemEditModalProps> = ({ item, isOpen, onCl
     updateItem(item.id, { promoType: promo });
   };
 
-  const promos: PromoType[] = ['Brak', 'Zniżka', '2 w 1', '3 w 2', 'Kupon'];
-  const qtyPresets = [1, 2, 3, 4, 5, 10];
+  const promos: PromoType[] = ['Brak', '1+1', '2+1', '2+2', 'Karta', 'Kupon'];
+  const qtyPresets = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
     <AnimatePresence>
@@ -65,35 +65,16 @@ export const ItemEditModal: React.FC<ItemEditModalProps> = ({ item, isOpen, onCl
               <div className="space-y-3">
                 <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Liczba sztuk</span>
                 
-                <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                  <button 
-                    onClick={() => handleQtyChange(-1)}
-                    disabled={item.quantity <= 1}
-                    className="w-12 h-12 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-800 shadow-sm text-zinc-600 dark:text-zinc-300 disabled:opacity-50 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-700"
-                  >
-                    <Minus size={24} />
-                  </button>
-                  <span className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100 w-16 text-center">
-                    {item.quantity}
-                  </span>
-                  <button 
-                    onClick={() => handleQtyChange(1)}
-                    className="w-12 h-12 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-800 shadow-sm text-zinc-600 dark:text-zinc-300 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-700"
-                  >
-                    <Plus size={24} />
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
+                <div className="grid grid-cols-3 gap-2">
                    {qtyPresets.map(qty => (
                      <button
                        key={qty}
                        onClick={() => handleSetQty(qty)}
                        className={cn(
-                         "flex-1 py-2 rounded-xl text-sm font-medium transition-all",
+                         "py-3 rounded-xl text-lg font-medium transition-all",
                          item.quantity === qty
-                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                           : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm"
+                           : "bg-zinc-50 text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 border border-zinc-100 dark:border-zinc-800/60"
                        )}
                      >
                        {qty}
