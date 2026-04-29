@@ -14,6 +14,7 @@ export default function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isAddingList, setIsAddingList] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [newListVisibility, setNewListVisibility] = useState<'private' | 'shared'>('private');
   const [listToDelete, setListToDelete] = useState<string | null>(null);
   
   const [listMenuContext, setListMenuContext] = useState<{ id: string, x: number, y: number } | null>(null);
@@ -102,8 +103,9 @@ export default function App() {
   const handleAddList = (e: React.FormEvent) => {
     e.preventDefault();
     if (newListName.trim()) {
-      addList(newListName.trim());
+      addList(newListName.trim(), newListVisibility);
       setNewListName('');
+      setNewListVisibility('private');
       setIsAddingList(false);
     }
   };
@@ -115,27 +117,17 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-4 w-full h-16 flex items-center justify-between gap-3 relative">
           
           <div className="flex items-center">
-            {isAddingList ? (
-              <form onSubmit={handleAddList} className="flex items-center pr-2">
-                <input
-                  autoFocus
-                  type="text"
-                  value={newListName}
-                  onChange={(e) => setNewListName(e.target.value)}
-                  onBlur={() => setIsAddingList(false)}
-                  placeholder="Nowa lista..."
-                  className="w-28 px-3 py-1.5 rounded-full text-xs bg-white dark:bg-zinc-900 border border-emerald-500 outline-none shadow-sm"
-                />
-              </form>
-            ) : (
-              <button
-                onClick={() => setIsAddingList(true)}
-                className="p-2 mr-2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
-              >
-                <Plus size={22} />
-              </button>
-            )}
-            {!isAddingList && <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 mr-2" />}
+            <button
+              onClick={() => {
+                setNewListName('');
+                setNewListVisibility('private');
+                setIsAddingList(true);
+              }}
+              className="p-2 mr-2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
+            >
+              <Plus size={22} />
+            </button>
+            <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 mr-2" />
           </div>
 
           <div 
@@ -415,6 +407,85 @@ export default function App() {
                   Usuń listę
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Add List Modal */}
+      <AnimatePresence>
+        {isAddingList && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsAddingList(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800"
+            >
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Nowa lista zakupów</h3>
+              <form onSubmit={handleAddList}>
+                <input
+                  autoFocus
+                  type="text"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  placeholder="Dowolna nazwa..."
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-xl text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow placeholder:text-zinc-400 mb-4"
+                />
+                
+                <div className="flex gap-3 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setNewListVisibility('private')}
+                    className={cn(
+                      "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all",
+                      newListVisibility === 'private'
+                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    )}
+                  >
+                    <Lock size={20} />
+                    <span className="text-sm font-medium">Prywatna</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewListVisibility('shared')}
+                    className={cn(
+                      "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all",
+                      newListVisibility === 'shared'
+                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    )}
+                  >
+                    <Users size={20} />
+                    <span className="text-sm font-medium">Współdzielona</span>
+                  </button>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingList(false)}
+                    className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                  >
+                    Anuluj
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!newListName.trim()}
+                    className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white transition-colors"
+                  >
+                    Utwórz
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}

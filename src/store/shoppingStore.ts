@@ -35,7 +35,7 @@ interface ShoppingStore {
   preferences: UserPreferences;
   
   // Actions
-  addList: (name: string) => void;
+  addList: (name: string, visibility?: 'private' | 'shared') => void;
   deleteList: (id: string) => void;
   updateList: (id: string, updates: Partial<ShoppingList>) => void;
   setCurrentList: (id: string) => void;
@@ -66,13 +66,13 @@ export const useShoppingStore = create<ShoppingStore>()(
         geminiApiKey: '',
       },
 
-      addList: (name) => set((state) => {
+      addList: (name, visibility = 'private') => set((state) => {
         const newList: ShoppingList = {
           id: uuidv4(),
           name,
           items: [],
           createdAt: Date.now(),
-          visibility: 'private',
+          visibility,
         };
         return {
           lists: [...state.lists, newList],
