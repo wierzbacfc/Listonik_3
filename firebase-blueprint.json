@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "SharedShoppingList": {
+      "title": "Shared Shopping List",
+      "description": "A shopping list shared across devices for a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Local ID of the list" },
+        "name": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "visibility": { "type": "string", "enum": ["shared"] },
+        "ownerId": { "type": "string" }
+      },
+      "required": ["id", "name", "createdAt", "visibility", "ownerId"]
+    },
+    "ShoppingItem": {
+      "title": "Shopping Item",
+      "description": "An item in a shared shopping list",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "object" },
+        "quantity": { "type": "number" },
+        "promoType": { "type": "string" },
+        "urgent": { "type": "boolean" },
+        "purchased": { "type": "boolean" },
+        "listOwnerId": { "type": "string" },
+        "updatedAt": { "type": "number", "description": "Timestamp to track atomicity or updates if needed" }
+      },
+      "required": ["id", "name", "category", "quantity", "promoType", "urgent", "purchased", "listOwnerId", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "shared_lists": {
+      "schema": { "$ref": "#/entities/SharedShoppingList" },
+      "description": "Shared shopping lists belonging to users"
+    },
+    "shared_lists/{listId}/items": {
+      "schema": { "$ref": "#/entities/ShoppingItem" },
+      "description": "Items in a shared shopping list"
+    }
+  }
+}

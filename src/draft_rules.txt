@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} { allow read, write: if false; }
+
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    function isValidSharedList(data) {
+      return data.keys().hasAll(['id', 'name', 'createdAt', 'visibility', 'ownerId']) &&
+             data.keys().size() == 5 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.createdAt is number &&
+             data.visibility == 'shared' &&
+             data.ownerId == request.auth.uid;
+    }
+
+    match /shared_lists/{listId} {
+      // Allow read if user is the owner
+      allow get: if isSignedIn() && isValidId(listId) && existing().ownerId == request.auth.uid;
+      // Allow list if resource.data.ownerId == request.auth.uid
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && 
+                    isValidId(listId) &&
+                    isValidSharedList(incoming());
+
+      allow update: if isSignedIn() && 
+                    isValidId(listId) &&
+                    incoming().ownerId == existing().ownerId &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().id == existing().id &&
+                    incoming().visibility == existing().visibility &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name']) &&
+                    incoming().name is string && incoming().name.size() <= 200;
+
+      allow delete: if isSignedIn() && isValidId(listId) && existing().ownerId == request.auth.uid;
+    }
+
+    function isValidShoppingItem(data) {
+      return data.keys().hasAll(['id', 'name', 'category', 'quantity', 'promoType', 'urgent', 'purchased', 'updatedAt']) &&
+             data.keys().size() == 8 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.category is map && data.category.keys().hasAll(['id', 'name', 'icon', 'color']) &&
+             data.quantity is number &&
+             data.promoType is string && data.promoType.size() <= 50 &&
+             data.urgent is bool &&
+             data.purchased is bool &&
+             data.updatedAt is number;
+    }
+
+    match /shared_lists/{listId}/items/{itemId} {
+      function isListOwner() {
+        return get(/databases/$(database)/documents/shared_lists/$(listId)).data.ownerId == request.auth.uid;
+      }
+
+      // We don't fetch parent inside `allow list` directly based on document relational getting because it will blow up the cost.
+      // Wait, let's look at the pillar #8: "You MUST NEVER delegate query security to the client... If you use allow list: if isSignedIn(); ... You are strictly forbidden from placing get() or exists() document lookups inside allow list blocks."
+      // BUT if items are a subcollection, how do we query items securely?
+      // "Prefer relational checks against resource.data over get() calls". Since items don't have ownerId natively,
+      // I should duplicate ownerId onto the item! Oh wait, I can just use get() in get, create, update, delete, but not `list`.
+      // Actually, if we add ownerId to ShoppingItem, `allow list: if resource.data.ownerId == request.auth.uid` is cheap!
+      // Let's modify the item to include listOwnerId.
+    }
+  }
+}

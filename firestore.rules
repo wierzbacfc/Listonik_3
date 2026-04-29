@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { allow read, write: if false; }
+
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    function isValidSharedList(data) {
+      return data.keys().hasAll(['id', 'name', 'createdAt', 'visibility', 'ownerId']) &&
+             data.keys().size() == 5 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.createdAt is number &&
+             data.visibility == 'shared' &&
+             data.ownerId == request.auth.uid;
+    }
+
+    match /shared_lists/{listId} {
+      allow get: if isSignedIn() && isValidId(listId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && 
+                    isValidId(listId) &&
+                    isValidSharedList(incoming());
+
+      allow update: if isSignedIn() && 
+                    isValidId(listId) &&
+                    isValidSharedList(incoming()) && 
+                    incoming().ownerId == existing().ownerId &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().id == existing().id &&
+                    incoming().visibility == existing().visibility &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name']);
+
+      allow delete: if isSignedIn() && isValidId(listId) && existing().ownerId == request.auth.uid;
+    }
+
+    function isValidShoppingItem(data) {
+      return data.keys().hasAll(['id', 'name', 'category', 'quantity', 'promoType', 'urgent', 'purchased', 'updatedAt', 'listOwnerId']) &&
+             data.keys().size() == 9 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.category is map && data.category.keys().hasAll(['id', 'name', 'icon', 'color']) &&
+             data.quantity is number &&
+             data.promoType is string && data.promoType.size() <= 50 &&
+             data.urgent is bool &&
+             data.purchased is bool &&
+             data.listOwnerId == request.auth.uid &&
+             data.updatedAt is number;
+    }
+
+    match /shared_lists/{listId}/items/{itemId} {
+      function isListOwner() {
+        return get(/databases/$(database)/documents/shared_lists/$(listId)).data.ownerId == request.auth.uid;
+      }
+
+      allow get: if isSignedIn() && isValidId(listId) && isValidId(itemId) && existing().listOwnerId == request.auth.uid;
+      allow list: if isSignedIn() && isValidId(listId) && resource.data.listOwnerId == request.auth.uid;
+
+      allow create: if isSignedIn() && 
+                    isValidId(listId) && isValidId(itemId) &&
+                    isListOwner() &&
+                    isValidShoppingItem(incoming());
+
+      allow update: if isSignedIn() && 
+                    isValidId(listId) && isValidId(itemId) &&
+                    isValidShoppingItem(incoming()) && 
+                    incoming().id == existing().id &&
+                    incoming().listOwnerId == existing().listOwnerId &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name', 'category', 'quantity', 'promoType', 'urgent', 'purchased', 'updatedAt']);
+
+      allow delete: if isSignedIn() && isValidId(listId) && isValidId(itemId) && existing().listOwnerId == request.auth.uid;
+    }
+  }
+}

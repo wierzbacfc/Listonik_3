@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useShoppingStore } from '../store/shoppingStore';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Moon, Sun, Key, Check } from 'lucide-react';
+import { X, Moon, Sun, Key, Check, LogIn, LogOut, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [apiKeyInput, setApiKeyInput] = useState(preferences.geminiApiKey);
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [testResult, setTestResult] = useState<'none' | 'success' | 'error'>('none');
+  const { user, signIn, signOut } = useAuth();
 
   useEffect(() => {
     setApiKeyInput(preferences.geminiApiKey);
@@ -54,7 +56,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             initial={{ opacity: 0, y: 100, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl shadow-xl overflow-hidden z-50 border border-zinc-200 dark:border-zinc-800"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-zinc-900 rounded-3xl shadow-xl z-50 border border-zinc-200 dark:border-zinc-800 flex flex-col no-scrollbar"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -68,6 +70,56 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </div>
 
               <div className="space-y-6">
+                {/* Account / Sync Settings */}
+                <div className="space-y-3">
+                  <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Konto i Synchronizacja</span>
+                  
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 border">
+                    {user ? (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          {user.photoURL ? (
+                            <img src={user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                              <LogIn size={20} />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate">{user.displayName || "Zalogowano"}</p>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">{user.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 text-sm text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/10 p-3 rounded-xl items-start">
+                          <Info size={18} className="shrink-0 mt-0.5" />
+                          <p>Listy współdzielone są teraz synchronizowane w chmurze i pojawią się na Twoich pozostałych urządzeniach.</p>
+                        </div>
+                        <button
+                          onClick={signOut}
+                          className="w-full flex items-center justify-center gap-2 py-2 mt-1 rounded-xl font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        >
+                          <LogOut size={18} />
+                          Wyloguj
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex gap-2 text-sm text-zinc-600 dark:text-zinc-400 items-start">
+                          <Info size={18} className="shrink-0 mt-0.5" />
+                          <p>Zaloguj się, aby zsynchronizować "współdzielone" listy między urządzeniami. Listy prywatne pozostają w pamięci telefonu.</p>
+                        </div>
+                        <button
+                          onClick={signIn}
+                          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-white bg-primary-500 hover:bg-primary-600 transition-colors"
+                        >
+                          <LogIn size={18} />
+                          Zaloguj się z Google
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Theme toggle */}
                 <div className="space-y-3">
                   <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Motyw</span>
@@ -129,7 +181,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
 
                 {/* API Key */}
-                <div className="space-y-3">
+                <div className="space-y-3 pb-4">
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Key size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -171,7 +223,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </div>
             </div>
 
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-800 sticky bottom-0">
               <button
                 onClick={handleSave}
                 className="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 rounded-2xl transition-colors"

@@ -7,8 +7,10 @@ import { ItemEditModal } from './components/ItemEditModal';
 import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
+import { useFirebaseSync } from './hooks/useFirebaseSync';
 
 export default function App() {
+  useFirebaseSync();
   const { lists, currentListId, addList, setCurrentList, preferences, clearPurchased, deleteList, updateList } = useShoppingStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
