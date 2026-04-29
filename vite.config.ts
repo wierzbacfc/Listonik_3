@@ -16,6 +16,7 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
+        includeAssets: ['icon-144.png', 'icon-192.png', 'icon-512.png'],
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
@@ -28,15 +29,19 @@ export default defineConfig(({mode}) => {
           theme_color: '#09090b',
           icons: [
             {
-              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
-              sizes: '512x512',
-              type: 'image/svg+xml',
-              purpose: 'any maskable'
+              src: 'icon-144.png',
+              sizes: '144x144',
+              type: 'image/png'
             },
             {
-              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
+              src: 'icon-192.png',
               sizes: '192x192',
-              type: 'image/svg+xml',
+              type: 'image/png'
+            },
+            {
+              src: 'icon-512.png',
+              sizes: '512x512',
+              type: 'image/png',
               purpose: 'any maskable'
             }
           ]
