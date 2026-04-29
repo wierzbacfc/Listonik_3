@@ -16,7 +16,7 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['icon-192.png', 'icon-512.png', 'icon-144.png'],
+        includeAssets: ['favicon.svg'],
         manifest: {
           name: 'ListoniK',
           short_name: 'ListoniK',
@@ -29,15 +29,15 @@ export default defineConfig(({mode}) => {
           theme_color: '#09090b',
           icons: [
             {
-              src: 'icon-512.png',
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
               sizes: '512x512',
-              type: 'image/png',
+              type: 'image/svg+xml',
               purpose: 'any maskable'
             },
             {
-              src: 'icon-192.png',
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2309090b'/%3E%3Ctext y='50%' x='50%' font-size='60' text-anchor='middle' dominant-baseline='middle'%3E🛒%3C/text%3E%3C/svg%3E",
               sizes: '192x192',
-              type: 'image/png',
+              type: 'image/svg+xml',
               purpose: 'any maskable'
             }
           ]
