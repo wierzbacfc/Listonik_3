@@ -20,7 +20,7 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
-        "category": { "type": "object" },
+        "category": { "type": "string" },
         "quantity": { "type": "number" },
         "promoType": { "type": "string" },
         "urgent": { "type": "boolean" },

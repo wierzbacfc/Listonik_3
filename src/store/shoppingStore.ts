@@ -112,11 +112,9 @@ export const useShoppingStore = create<ShoppingStore>()(
       addList: (name, visibility = 'shared') => set((state) => {
         const id = uuidv4();
         if (visibility === 'shared' && auth.currentUser) {
-          try {
-            setDoc(doc(db, 'shared_lists', id), {
-              id, name, createdAt: Date.now(), visibility, ownerId: auth.currentUser.uid
-            });
-          } catch (e) { handleFirestoreError(e, OperationType.CREATE, `shared_lists/${id}`); }
+          setDoc(doc(db, 'shared_lists', id), {
+            id, name, createdAt: Date.now(), visibility, ownerId: auth.currentUser.uid
+          }).catch(e => handleFirestoreError(e, OperationType.CREATE, `shared_lists/${id}`));
         }
         const newList: ShoppingList = {
           id,
@@ -135,13 +133,7 @@ export const useShoppingStore = create<ShoppingStore>()(
       deleteList: (id) => set((state) => {
         const list = state.lists.find(l => l.id === id);
         if (list?.visibility === 'shared' && auth.currentUser) {
-          try { 
-            list.items.forEach(item => {
-              deleteDoc(doc(db, `shared_lists/${id}/items`, item.id));
-            });
-            deleteDoc(doc(db, 'shared_lists', id)); 
-          } 
-          catch (e) { handleFirestoreError(e, OperationType.DELETE, `shared_lists/${id}`); }
+          deleteDoc(doc(db, 'shared_lists', id)).catch(e => handleFirestoreError(e, OperationType.DELETE, `shared_lists/${id}`));
         }
         return {
           lists: state.lists.filter((l) => l.id !== id),
@@ -154,8 +146,7 @@ export const useShoppingStore = create<ShoppingStore>()(
       updateList: (id, updates) => set((state) => {
         const list = state.lists.find(l => l.id === id);
         if (list?.visibility === 'shared' && auth.currentUser) {
-          try { updateDoc(doc(db, 'shared_lists', id), updates as any); } 
-          catch (e) { handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${id}`); }
+          updateDoc(doc(db, 'shared_lists', id), updates as any).catch(e => handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${id}`));
         }
         return {
           lists: state.lists.map(list => list.id === id ? { ...list, ...updates } : list)
@@ -181,8 +172,7 @@ export const useShoppingStore = create<ShoppingStore>()(
         };
 
         if (list?.visibility === 'shared' && auth.currentUser) {
-          try { setDoc(doc(db, `shared_lists/${list.id}/items`, newItem.id), newItem as any); } 
-          catch (e) { handleFirestoreError(e, OperationType.CREATE, `shared_lists/${list.id}/items/${newItem.id}`); }
+          setDoc(doc(db, `shared_lists/${list.id}/items`, newItem.id), newItem as any).catch(e => handleFirestoreError(e, OperationType.CREATE, `shared_lists/${list.id}/items/${newItem.id}`));
         }
 
         const updatedLists = state.lists.map(l => {
@@ -201,8 +191,7 @@ export const useShoppingStore = create<ShoppingStore>()(
         const item = list?.items.find(i => i.id === id);
         
         if (list?.visibility === 'shared' && auth.currentUser && item) {
-          try { updateDoc(doc(db, `shared_lists/${list.id}/items`, id), { ...updates, updatedAt: Date.now() } as any); } 
-          catch (e) { handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${list.id}/items/${id}`); }
+          updateDoc(doc(db, `shared_lists/${list.id}/items`, id), { ...updates, updatedAt: Date.now() } as any).catch(e => handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${list.id}/items/${id}`));
         }
 
         const updatedLists = state.lists.map(l => {
@@ -222,8 +211,7 @@ export const useShoppingStore = create<ShoppingStore>()(
         const list = state.lists.find(l => l.id === state.currentListId);
         
         if (list?.visibility === 'shared' && auth.currentUser) {
-          try { deleteDoc(doc(db, `shared_lists/${list.id}/items`, id)); } 
-          catch (e) { handleFirestoreError(e, OperationType.DELETE, `shared_lists/${list.id}/items/${id}`); }
+          deleteDoc(doc(db, `shared_lists/${list.id}/items`, id)).catch(e => handleFirestoreError(e, OperationType.DELETE, `shared_lists/${list.id}/items/${id}`));
         }
 
         const updatedLists = state.lists.map(l => {
@@ -244,8 +232,7 @@ export const useShoppingStore = create<ShoppingStore>()(
         const item = list?.items.find(i => i.id === id);
         
         if (list?.visibility === 'shared' && auth.currentUser && item) {
-          try { updateDoc(doc(db, `shared_lists/${list.id}/items`, id), { purchased: !item.purchased, updatedAt: Date.now() } as any); } 
-          catch (e) { handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${list.id}/items/${id}`); }
+          updateDoc(doc(db, `shared_lists/${list.id}/items`, id), { purchased: !item.purchased, updatedAt: Date.now() } as any).catch(e => handleFirestoreError(e, OperationType.UPDATE, `shared_lists/${list.id}/items/${id}`));
         }
 
         const updatedLists = state.lists.map(l => {
@@ -267,8 +254,7 @@ export const useShoppingStore = create<ShoppingStore>()(
         if (list?.visibility === 'shared' && auth.currentUser) {
           list.items.forEach(item => {
             if (item.purchased) {
-              try { deleteDoc(doc(db, `shared_lists/${list.id}/items`, item.id)); } 
-              catch (e) { handleFirestoreError(e, OperationType.DELETE, `shared_lists/${list.id}/items/${item.id}`); }
+              deleteDoc(doc(db, `shared_lists/${list.id}/items`, item.id)).catch(e => handleFirestoreError(e, OperationType.DELETE, `shared_lists/${list.id}/items/${item.id}`));
             }
           });
         }

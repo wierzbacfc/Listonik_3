@@ -4,7 +4,7 @@ import { ProductCard } from './components/ProductCard';
 import { ProductInput } from './components/ProductInput';
 import { SettingsModal } from './components/SettingsModal';
 import { ItemEditModal } from './components/ItemEditModal';
-import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download } from 'lucide-react';
+import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download, Cloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
@@ -189,14 +189,44 @@ export default function App() {
                   whileTap={{ scale: 0.95 }}
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleListClick(e, list.id)}
                   className={cn(
-                    "whitespace-nowrap px-4 py-2.5 rounded-xl border transition-all duration-200 shrink-0 flex items-center gap-1.5 relative shadow-sm text-sm font-display",
+                    "whitespace-nowrap pl-2 pr-4 py-1.5 rounded-xl border transition-all duration-200 shrink-0 flex items-center gap-2.5 relative shadow-sm text-sm font-display",
                     currentListId === list.id
                       ? "bg-primary-500 border-primary-600 dark:border-primary-400 text-white font-semibold shadow-md"
                       : "bg-white dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-300 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-200 dark:hover:border-primary-500/30 hover:text-primary-700 dark:hover:text-primary-300"
                   )}
                 >
-                  {list.visibility === 'shared' ? <Users size={14} className="opacity-70" /> : <Lock size={14} className="opacity-70" />}
-                  {list.name}
+                  {list.visibility === 'shared' ? (
+                    <div className={cn(
+                      "flex items-center justify-center p-1.5 rounded-lg shrink-0",
+                      currentListId === list.id 
+                        ? "bg-white/25 text-white shadow-inner" 
+                        : "bg-blue-50 border border-blue-200/50 text-blue-600 dark:bg-blue-500/20 dark:border-blue-500/30 dark:text-blue-400"
+                    )}>
+                      <Cloud size={14} className={currentListId === list.id ? "" : "opacity-80"} />
+                    </div>
+                  ) : (
+                    <div className={cn(
+                      "flex items-center justify-center p-1.5 rounded-lg shrink-0",
+                      currentListId === list.id 
+                        ? "bg-white/20 text-white shadow-inner" 
+                        : "bg-zinc-100 border border-zinc-200 text-zinc-500 dark:bg-zinc-700/50 dark:border-zinc-600 dark:text-zinc-400"
+                    )}>
+                      <Lock size={14} className={currentListId === list.id ? "opacity-90" : "opacity-80"} />
+                    </div>
+                  )}
+                  <div className="flex flex-col items-start leading-[1.1] justify-center mt-0.5">
+                    <span className={cn(
+                      "text-[9px] uppercase font-bold tracking-[0.08em]",
+                      currentListId === list.id 
+                        ? "opacity-80" 
+                        : list.visibility === 'shared' 
+                          ? "text-blue-500 dark:text-blue-400 opacity-90" 
+                          : "text-zinc-400 dark:text-zinc-500"
+                    )}>
+                      {list.visibility === 'shared' ? 'Z chmury' : 'Lokalna'}
+                    </span>
+                    <span>{list.name}</span>
+                  </div>
                 </motion.button>
               )
             ))}
