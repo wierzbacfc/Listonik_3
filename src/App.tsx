@@ -96,7 +96,8 @@ export default function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [preferences.theme]);
+    document.documentElement.setAttribute('data-theme', preferences.primaryColor || 'emerald');
+  }, [preferences.theme, preferences.primaryColor]);
 
   // Create initial list if none exists
   useEffect(() => {
@@ -135,12 +136,14 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-4 w-full h-16 flex items-center justify-between gap-3 relative">
           
           <div className="flex items-center">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsAddingList(true)}
-              className="p-2 mr-2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
+              className="p-2 mr-2 rounded-full bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-500/30 transition-colors shrink-0 flex items-center justify-center shadow-sm"
             >
               <Plus size={22} />
-            </button>
+            </motion.button>
             <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 shrink-0 mr-2" />
           </div>
 
@@ -172,44 +175,50 @@ export default function App() {
                         setEditingListId(null);
                     }}
                     className={cn(
-                      "w-32 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-500 outline-none shadow-sm dark:bg-emerald-900/30 dark:text-emerald-100 dark:border-emerald-500/50"
+                      "w-32 px-3 py-1.5 rounded-full text-xs font-medium bg-primary-50 text-primary-900 border border-primary-500 outline-none shadow-sm dark:bg-primary-900/30 dark:text-primary-100 dark:border-primary-500/50"
                     )}
                   />
                 </form>
               ) : (
-                <button
+                <motion.button
                   key={list.id}
-                  onClick={(e) => handleListClick(e, list.id)}
+                  whileHover={{ scale: currentListId === list.id ? 1.07 : 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleListClick(e, list.id)}
                   className={cn(
                     "whitespace-nowrap px-4 py-2 rounded-2xl transition-all duration-200 shrink-0 flex items-center gap-1.5 relative",
                     currentListId === list.id
-                      ? "bg-emerald-500 text-white shadow-md font-bold scale-105"
+                      ? "bg-primary-500 text-white shadow-md font-bold scale-105"
                       : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-sm font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800"
                   )}
                 >
                   {list.visibility === 'shared' ? <Users size={14} className="opacity-70" /> : <Lock size={14} className="opacity-70" />}
                   {list.name}
-                </button>
+                </motion.button>
               )
             ))}
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
             {deferredPrompt && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleInstallClick}
-                className="p-2 rounded-full text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+                className="p-2 rounded-full text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors"
                 title="Zainstaluj aplikację na urządzeniu"
               >
                 <Download size={22} />
-              </button>
+              </motion.button>
             )}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsSettingsOpen(true)}
               className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
             >
               <Settings size={22} />
-            </button>
+            </motion.button>
           </div>
         </div>
       </header>
@@ -367,6 +376,8 @@ export default function App() {
                   
                   <motion.button
                     layout
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={clearPurchased}
                     className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium"
                   >
@@ -421,7 +432,7 @@ export default function App() {
                     value={newListName}
                     onChange={(e) => setNewListName(e.target.value)}
                     placeholder="np. Zakupy na weekend"
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                   />
                 </div>
                 <div>
@@ -433,7 +444,7 @@ export default function App() {
                       className={cn(
                         "flex-1 px-3 py-2 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-colors border",
                         newListVisibility === 'shared'
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-500/20 dark:border-emerald-500/30 dark:text-emerald-300"
+                          ? "bg-primary-50 border-primary-200 text-primary-700 dark:bg-primary-500/20 dark:border-primary-500/30 dark:text-primary-300"
                           : "bg-transparent border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
                       )}
                     >
@@ -446,7 +457,7 @@ export default function App() {
                       className={cn(
                         "flex-1 px-3 py-2 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-colors border",
                         newListVisibility === 'private'
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-500/20 dark:border-emerald-500/30 dark:text-emerald-300"
+                          ? "bg-primary-50 border-primary-200 text-primary-700 dark:bg-primary-500/20 dark:border-primary-500/30 dark:text-primary-300"
                           : "bg-transparent border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
                       )}
                     >
@@ -466,7 +477,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={!newListName.trim()}
-                    className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-primary-500 hover:bg-primary-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Dodaj
                   </button>

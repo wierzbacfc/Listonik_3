@@ -94,7 +94,7 @@ export const ItemEditModal: React.FC<ItemEditModalProps> = ({ item, isOpen, onCl
                       className={cn(
                         "flex items-center justify-between p-3 rounded-xl border transition-all",
                         item.promoType === promo
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                          ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-400"
                           : "border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       )}
                     >
@@ -109,7 +109,7 @@ export const ItemEditModal: React.FC<ItemEditModalProps> = ({ item, isOpen, onCl
             <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 onClick={onClose}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 rounded-2xl transition-colors"
+                className="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 rounded-2xl transition-colors"
               >
                 Gotowe
               </button>

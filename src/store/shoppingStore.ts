@@ -25,6 +25,7 @@ export interface ShoppingList {
 
 interface UserPreferences {
   theme: 'light' | 'dark';
+  primaryColor: 'emerald' | 'blue' | 'violet';
   geminiApiKey: string;
 }
 
@@ -49,6 +50,7 @@ interface ShoppingStore {
   addToUserCatalog: (name: string, category: Category) => void;
   
   setTheme: (theme: 'light' | 'dark') => void;
+  setPrimaryColor: (color: 'emerald' | 'blue' | 'violet') => void;
   setGeminiApiKey: (key: string) => void;
   
   // Getters
@@ -63,6 +65,7 @@ export const useShoppingStore = create<ShoppingStore>()(
       userCatalog: [],
       preferences: {
         theme: 'light',
+        primaryColor: 'emerald',
         geminiApiKey: '',
       },
 
@@ -178,6 +181,10 @@ export const useShoppingStore = create<ShoppingStore>()(
 
       setTheme: (theme) => set((state) => ({
         preferences: { ...state.preferences, theme }
+      })),
+
+      setPrimaryColor: (color) => set((state) => ({
+        preferences: { ...state.preferences, primaryColor: color }
       })),
 
       setGeminiApiKey: (key) => set((state) => ({

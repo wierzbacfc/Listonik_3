@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useShoppingStore } from '../store/shoppingStore';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Moon, Sun, Key } from 'lucide-react';
+import { X, Moon, Sun, Key, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface SettingsModalProps {
@@ -10,7 +10,7 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
-  const { preferences, setTheme, setGeminiApiKey } = useShoppingStore();
+  const { preferences, setTheme, setPrimaryColor, setGeminiApiKey } = useShoppingStore();
   const [apiKeyInput, setApiKeyInput] = useState(preferences.geminiApiKey);
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [testResult, setTestResult] = useState<'none' | 'success' | 'error'>('none');
@@ -77,7 +77,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       className={cn(
                         "flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl border transition-all",
                         preferences.theme === 'light' 
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                          ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400" 
                           : "border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       )}
                     >
@@ -89,13 +89,42 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       className={cn(
                         "flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl border transition-all",
                         preferences.theme === 'dark' 
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                          ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400" 
                           : "border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       )}
                     >
                       <Moon size={18} />
                       <span className="font-medium">Ciemny</span>
                     </button>
+                  </div>
+                </div>
+
+                {/* Primary Color select */}
+                <div className="space-y-3 pt-2">
+                  <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Kolor wiodący</span>
+                  <div className="flex gap-3">
+                    {[
+                      { id: 'emerald', color: '#10b981', label: 'Zielony' },
+                      { id: 'blue', color: '#3b82f6', label: 'Niebieski' },
+                      { id: 'violet', color: '#8b5cf6', label: 'Fioletowy' },
+                    ].map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setPrimaryColor(c.id as any)}
+                        className={cn(
+                          "flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 p-3 text-sm rounded-2xl border transition-all",
+                          preferences.primaryColor === c.id 
+                            ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400" 
+                            : "border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                        )}
+                      >
+                        <div 
+                          className="w-4 h-4 rounded-full shadow-sm shrink-0" 
+                          style={{ backgroundColor: c.color }}
+                        />
+                        <span className="font-medium">{c.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -112,7 +141,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                           setTestResult('none');
                         }}
                         placeholder="Wklej klucz API Gemini..."
-                        className="w-full pl-10 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow placeholder:text-zinc-400"
+                        className="w-full pl-10 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500 outline-none transition-shadow placeholder:text-zinc-400"
                       />
                     </div>
                     <button
@@ -121,7 +150,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       className={cn(
                         "px-4 rounded-2xl font-medium text-sm transition-colors flex items-center justify-center min-w-[80px]",
                         testResult === 'success' 
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
+                          ? "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400" 
                           : testResult === 'error'
                           ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                           : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none"
@@ -145,7 +174,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 onClick={handleSave}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 rounded-2xl transition-colors"
+                className="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 rounded-2xl transition-colors"
               >
                 Zapisz ustawienia
               </button>
