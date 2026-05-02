@@ -152,7 +152,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
 
                 {/* Primary Color select */}
-                <div className="space-y-3 pt-2">
+                <div className="space-y-3 pt-2 pb-4">
                   <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Kolor wiodący</span>
                   <div className="flex gap-3">
                     {[
@@ -179,47 +179,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                     ))}
                   </div>
                 </div>
-
-                {/* API Key */}
-                <div className="space-y-3 pb-4">
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Key size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
-                      <input
-                        type="password"
-                        value={apiKeyInput}
-                        onChange={(e) => {
-                          setApiKeyInput(e.target.value);
-                          setTestResult('none');
-                        }}
-                        placeholder="Wklej klucz API Gemini..."
-                        className="w-full pl-10 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500 outline-none transition-shadow placeholder:text-zinc-400"
-                      />
-                    </div>
-                    <button
-                      onClick={handleTestKey}
-                      disabled={isTestLoading || !apiKeyInput.trim()}
-                      className={cn(
-                        "px-4 rounded-2xl font-medium text-sm transition-colors flex items-center justify-center min-w-[80px]",
-                        testResult === 'success' 
-                          ? "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400" 
-                          : testResult === 'error'
-                          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                          : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:pointer-events-none"
-                      )}
-                    >
-                      {isTestLoading ? (
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      ) : testResult === 'success' ? (
-                        'OK'
-                      ) : testResult === 'error' ? (
-                        'Błąd'
-                      ) : (
-                        'Sprawdź'
-                      )}
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -230,6 +189,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               >
                 Zapisz ustawienia
               </button>
+              <div className="mt-2 text-center text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                Wersja 0.0.94
+              </div>
             </div>
           </motion.div>
         </React.Fragment>

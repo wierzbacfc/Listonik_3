@@ -3,6 +3,7 @@ import { useShoppingStore } from '../store/shoppingStore';
 import { initialCatalog } from '../data/catalog';
 import { classifyProductWithGemini } from '../lib/gemini';
 import { motion, AnimatePresence } from 'motion/react';
+import { triggerActionFeedback } from '../lib/audio';
 import { Send, Loader2, Plus, Sparkles } from 'lucide-react';
 
 export const ProductInput: React.FC = () => {
@@ -28,6 +29,7 @@ export const ProductInput: React.FC = () => {
     setInput('');
     setShowSuggestions(false);
     inputRef.current?.focus();
+    triggerActionFeedback('add');
 
     if (predefinedCategory) {
       addItem(capitalizedName, predefinedCategory as any);
@@ -61,19 +63,18 @@ export const ProductInput: React.FC = () => {
       return;
     }
     
-    // 4. Gemini or fallback
-    if (preferences.geminiApiKey) {
-      setIsClassifying(true);
-      try {
-        const category = await classifyProductWithGemini(trimmed, preferences.geminiApiKey);
-        addToUserCatalog(capitalizedName, category);
-        addItem(capitalizedName, category);
-      } finally {
-        setIsClassifying(false);
-      }
-    } else {
+    // 4. Gemini classification
+    setIsClassifying(true);
+    try {
+      const category = await classifyProductWithGemini(trimmed);
+      addToUserCatalog(capitalizedName, category);
+      addItem(capitalizedName, category);
+    } catch (error) {
+      console.error("Classification failed", error);
       addToUserCatalog(capitalizedName, 'Inne');
       addItem(capitalizedName, 'Inne');
+    } finally {
+      setIsClassifying(false);
     }
   };
 
@@ -110,7 +111,7 @@ export const ProductInput: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-2 p-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full shadow-lg">
+      <div className="flex items-center gap-2 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-xl">
         <input
           ref={inputRef}
           type="text"
@@ -123,19 +124,19 @@ export const ProductInput: React.FC = () => {
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           onKeyDown={handleKeyDown}
           placeholder="Dodaj produkt..."
-          className="flex-1 bg-transparent border-none outline-none pl-4 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
+          className="flex-1 bg-transparent border-none outline-none pl-5 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 py-2.5 text-lg"
         />
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleAdd(input)}
           disabled={!input.trim() || isClassifying}
-          className="w-10 h-10 shrink-0 rounded-full bg-primary-500 hover:bg-primary-600 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white flex items-center justify-center shadow-md border-none outline-none"
+          className="w-14 h-14 shrink-0 rounded-[1.25rem] bg-primary-500 hover:bg-primary-600 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white flex items-center justify-center shadow-md border-none outline-none"
         >
           {isClassifying ? (
-            <Loader2 size={18} className="animate-spin" />
+            <Loader2 size={20} className="animate-spin" />
           ) : (
-            <Plus size={22} />
+            <Plus size={26} />
           )}
         </motion.button>
       </div>

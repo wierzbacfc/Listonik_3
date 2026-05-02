@@ -5,7 +5,7 @@ import { Category, CatalogItem, initialCatalog } from '../data/catalog';
 import { auth, db } from '../firebase';
 import { doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
-export type PromoType = 'Brak' | '1+1' | '2+1' | '2+2' | 'Karta' | 'Kupon';
+export type PromoType = 'Brak' | '1+1' | '2+1' | '2+2' | 'Wielosztuka' | 'Karta' | 'Kupon';
 
 export interface ShoppingItem {
   id: string;

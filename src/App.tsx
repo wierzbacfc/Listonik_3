@@ -4,7 +4,8 @@ import { ProductCard } from './components/ProductCard';
 import { ProductInput } from './components/ProductInput';
 import { SettingsModal } from './components/SettingsModal';
 import { ItemEditModal } from './components/ItemEditModal';
-import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download, Cloud } from 'lucide-react';
+import { ProductEditModal } from './components/ProductEditModal';
+import { Settings, Plus, List, Trash2, Lock, Users, MoreVertical, Edit2, Download, Cloud, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
@@ -14,10 +15,12 @@ export default function App() {
   const { lists, currentListId, addList, setCurrentList, preferences, clearPurchased, deleteList, updateList } = useShoppingStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingProductItemId, setEditingProductItemId] = useState<string | null>(null);
   const [isAddingList, setIsAddingList] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListVisibility, setNewListVisibility] = useState<'private' | 'shared'>('shared');
   const [listToDelete, setListToDelete] = useState<string | null>(null);
+  const [notifyListId, setNotifyListId] = useState<string | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const [listMenuContext, setListMenuContext] = useState<{ id: string, x: number, y: number } | null>(null);
@@ -129,6 +132,42 @@ export default function App() {
       setNewListVisibility('shared');
       setIsAddingList(false);
     }
+  };
+
+  const handleNotifyMissing = async () => {
+    if (!notifyListId) return;
+    const list = lists.find(l => l.id === notifyListId);
+    if (!list) {
+      setNotifyListId(null);
+      return;
+    }
+    const missingItems = list.items.filter(i => !i.purchased);
+    if (missingItems.length === 0) {
+      alert("Wszystkie produkty na tej liście zostały już kupione!");
+      setNotifyListId(null);
+      return;
+    }
+
+    const text = `Hej, zostało nam jeszcze do kupienia z listy "${list.name}":\n\n` + 
+      missingItems.map(i => `- ${i.name}${i.quantity > 1 ? ` (${i.quantity} szt.)` : ''}`).join('\n') + 
+      `\n\nCzy możesz po to wstąpić?`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Braki na liście: ${list.name}`,
+          text: text
+        });
+      } else {
+        await navigator.clipboard.writeText(text);
+        alert("Tekst został skopiowany do schowka, ponieważ Twoja przeglądarka nie obsługuje natywnego udostępniania.");
+      }
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') {
+        console.error("Error sharing", e);
+      }
+    }
+    setNotifyListId(null);
   };
 
   return (
@@ -254,6 +293,19 @@ export default function App() {
             </motion.button>
           </div>
         </div>
+        
+        {/* Animated Progress Bar */}
+        <div className="w-full h-[18px] bg-zinc-200 dark:bg-zinc-800/80 relative flex items-center justify-center overflow-hidden">
+          <motion.div 
+            className="absolute left-0 top-0 bottom-0 bg-primary-500 shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)]"
+            initial={{ width: 0 }}
+            animate={{ width: `${items.length > 0 ? (items.filter(i => i.purchased).length / items.length) * 100 : 0}%` }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          />
+          <span className="relative z-10 text-[11px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] tracking-wider">
+            {items.filter(i => i.purchased).length} / {items.length}
+          </span>
+        </div>
       </header>
 
       {/* List Dropdown Menu */}
@@ -291,6 +343,15 @@ export default function App() {
                 className="flex items-center gap-2 px-2 py-2 rounded-xl text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors text-left"
               >
                 <Edit2 size={16} /> Zmień nazwę
+              </button>
+              <button
+                onClick={() => {
+                  setNotifyListId(listMenuContext.id);
+                  setListMenuContext(null);
+                }}
+                className="flex items-center gap-2 px-2 py-2 rounded-xl text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors text-left"
+              >
+                <Bell size={16} /> Powiadom o brakach
               </button>
               <div className="h-px bg-zinc-100 dark:bg-zinc-800/50 my-0.5" />
               <button
@@ -338,9 +399,12 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="h-full flex flex-col items-center justify-center text-center opacity-50 mt-10"
             >
-              <List size={40} className="mb-3 text-zinc-300 dark:text-zinc-700" />
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm">Brak produktów na liście.</p>
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">Dodaj coś za pomocą pola poniżej.</p>
+              <img 
+                src="https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=300&h=300&fit=crop" 
+                alt="Sad cat" 
+                className="w-40 h-40 object-cover rounded-3xl mb-4 opacity-70 sepia-[.3]"
+              />
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Brak produktów</p>
             </motion.div>
           ) : (
             <motion.div 
@@ -351,7 +415,7 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-            <motion.div layout className="space-y-2">
+            <motion.div layout className="space-y-1">
               <AnimatePresence>
                 {Object.entries(groupedItems).map(([category, catItems]) => (
                   <motion.div 
@@ -361,7 +425,7 @@ export default function App() {
                     exit={{ opacity: 0, height: 0, overflow: 'hidden' }} 
                     transition={{ duration: 0.2 }}
                     key={category} 
-                    className="space-y-1"
+                    className="space-y-0.5"
                   >
                     <motion.h3 layout className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-1 sticky top-12 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-sm z-10 py-1">
                       {category}
@@ -373,6 +437,7 @@ export default function App() {
                             key={item.id} 
                             item={item} 
                             onEdit={() => setEditingItemId(item.id)}
+                            onEditProduct={() => setEditingProductItemId(item.id)}
                           />
                         ))}
                       </AnimatePresence>
@@ -402,6 +467,7 @@ export default function App() {
                           key={item.id} 
                           item={item} 
                           onEdit={() => setEditingItemId(item.id)}
+                          onEditProduct={() => setEditingProductItemId(item.id)}
                         />
                       ))}
                     </AnimatePresence>
@@ -436,6 +502,12 @@ export default function App() {
         isOpen={!!editingItemId}
         item={items.find(i => i.id === editingItemId) || null}
         onClose={() => setEditingItemId(null)}
+      />
+
+      <ProductEditModal
+        isOpen={!!editingProductItemId}
+        item={items.find(i => i.id === editingProductItemId) || null}
+        onClose={() => setEditingProductItemId(null)}
       />
 
       {/* Add List Modal */}
@@ -557,6 +629,46 @@ export default function App() {
                   className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-red-500 hover:bg-red-600 text-white transition-colors"
                 >
                   Usuń listę
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Notify Missing Modal */}
+      <AnimatePresence>
+        {notifyListId && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setNotifyListId(null)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800"
+            >
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Powiadom o brakach</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
+                Czy chcesz wysłać powiadomienie do drugiego użytkownika z listą rzeczy do kupienia? Wysłanie spowoduje udostępnienie tekstu do innej aplikacji.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setNotifyListId(null)}
+                  className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                >
+                  Anuluj
+                </button>
+                <button
+                  onClick={handleNotifyMissing}
+                  className="flex-1 px-4 py-2.5 rounded-xl font-medium bg-primary-500 hover:bg-primary-600 text-white transition-colors"
+                >
+                  Wyślij
                 </button>
               </div>
             </motion.div>

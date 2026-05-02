@@ -15,9 +15,11 @@ export const testGeminiApiKey = async (apiKey: string): Promise<boolean> => {
   }
 };
 
-export const classifyProductWithGemini = async (productName: string, apiKey: string): Promise<Category> => {
+export const classifyProductWithGemini = async (productName: string): Promise<Category> => {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('Gemini API key is required');
+    console.warn('No Gemini API key available, using fallback');
+    return 'Inne';
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -31,7 +33,7 @@ export const classifyProductWithGemini = async (productName: string, apiKey: str
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: `User wants to add a shopping item named: "${productName}". 
 Assign it to the most appropriate category from the following list: ${categories.join(', ')}. 
 Respond ONLY with the category name exactly as written in the list.`,
