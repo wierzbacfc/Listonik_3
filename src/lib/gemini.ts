@@ -1,8 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from '../data/catalog';
 
-export const testGeminiApiKey = async (): Promise<boolean> => {
-  const apiKey = process.env.GEMINI_API_KEY;
+export const testGeminiApiKey = async (userKey?: string): Promise<boolean> => {
+  const apiKey = userKey || process.env.GEMINI_API_KEY;
   if (!apiKey) return false;
   try {
     const ai = new GoogleGenAI({ apiKey });
@@ -17,8 +17,8 @@ export const testGeminiApiKey = async (): Promise<boolean> => {
   }
 };
 
-export const classifyProductWithGemini = async (productName: string): Promise<Category> => {
-  const apiKey = process.env.GEMINI_API_KEY;
+export const classifyProductWithGemini = async (productName: string, userKey?: string): Promise<Category> => {
+  const apiKey = userKey || process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.warn('No Gemini API key available, using fallback');
     return 'Inne';

@@ -86,7 +86,7 @@ export const ItemEditModal: React.FC<ItemEditModalProps> = ({ item, isOpen, onCl
               {/* Promo */}
               <div className="space-y-3">
                 <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Promocja</span>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
                   {promos.map(promo => (
                     <button
                       key={promo}

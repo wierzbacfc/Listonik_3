@@ -73,7 +73,7 @@ export const ProductInput: React.FC = () => {
     // 4. Gemini classification
     setIsClassifying(true);
     try {
-      const category = await classifyProductWithGemini(trimmed);
+      const category = await classifyProductWithGemini(trimmed, preferences.geminiApiKey);
       addToUserCatalog(capitalizedName, category);
       addItem(capitalizedName, category, quantity, promoType);
     } catch (error) {
@@ -157,7 +157,7 @@ export const ProductInput: React.FC = () => {
               exit={{ height: 0, opacity: 0 }}
               className="flex flex-col gap-3 px-3 pb-2 pt-1"
             >
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden h-9 shadow-sm">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
