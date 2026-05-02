@@ -18,21 +18,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const { user, signIn, signOut } = useAuth();
 
   useEffect(() => {
-    setApiKeyInput(preferences.geminiApiKey);
-  }, [preferences.geminiApiKey, isOpen]);
+    // Test AI connection when settings open
+    if (isOpen && testResult === 'none') {
+      handleTestKey();
+    }
+  }, [isOpen]);
 
   const handleSave = () => {
-    setGeminiApiKey(apiKeyInput.trim());
     onClose();
   };
 
   const handleTestKey = async () => {
-    if (!apiKeyInput.trim()) return;
     setIsTestLoading(true);
     setTestResult('none');
     try {
       const { testGeminiApiKey } = await import('../lib/gemini');
-      const isValid = await testGeminiApiKey(apiKeyInput.trim());
+      const isValid = await testGeminiApiKey();
       setTestResult(isValid ? 'success' : 'error');
     } catch {
       setTestResult('error');
@@ -152,7 +153,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
 
                 {/* Primary Color select */}
-                <div className="space-y-3 pt-2 pb-4">
+                <div className="space-y-3 pt-2 pb-2">
                   <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Kolor wiodący</span>
                   <div className="flex gap-3">
                     {[
@@ -179,6 +180,51 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                     ))}
                   </div>
                 </div>
+
+                {/* AI Connection Status */}
+                <div className="space-y-3 pb-4">
+                  <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Połączenie z AI</span>
+                  <div className="p-4 rounded-2xl border bg-zinc-50/50 dark:bg-zinc-800/30 border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm",
+                        isTestLoading ? "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400" :
+                        testResult === 'success' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400" :
+                        testResult === 'error' ? "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400" :
+                        "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                      )}>
+                        {isTestLoading ? (
+                          <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : testResult === 'success' ? (
+                          <Check size={20} />
+                        ) : testResult === 'error' ? (
+                          <X size={20} />
+                        ) : (
+                          <Info size={20} />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+                          {isTestLoading ? "Łączenie z Gemini..." :
+                           testResult === 'success' ? "Połączono poprawnie" :
+                           testResult === 'error' ? "Błąd komunikacji" : "Nie sprawdzono"}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          {isTestLoading ? "Weryfikacja klucza wymaganego do kategoryzacji produktów." : 
+                           testResult === 'success' ? "Funkcja inteligentnej kategoryzacji jest aktywna." :
+                           "Odśwież aplikację lub ponów próbę."}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleTestKey}
+                      disabled={isTestLoading}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors shrink-0 disabled:opacity-50"
+                    >
+                      Sprawdź
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -190,7 +236,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 Zapisz ustawienia
               </button>
               <div className="mt-2 text-center text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                Wersja 0.0.94
+                Wersja 0.0.98
               </div>
             </div>
           </motion.div>

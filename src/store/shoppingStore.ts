@@ -78,7 +78,7 @@ interface ShoppingStore {
   updateList: (id: string, updates: Partial<ShoppingList>) => void;
   setCurrentList: (id: string) => void;
   
-  addItem: (name: string, category: Category) => void;
+  addItem: (name: string, category: Category, quantity?: number, promoType?: PromoType) => void;
   updateItem: (id: string, updates: Partial<ShoppingItem>) => void;
   deleteItem: (id: string) => void;
   toggleItemPurchased: (id: string) => void;
@@ -155,7 +155,7 @@ export const useShoppingStore = create<ShoppingStore>()(
 
       setCurrentList: (id) => set({ currentListId: id }),
 
-      addItem: (name, category) => set((state) => {
+      addItem: (name, category, quantity = 1, promoType = 'Brak') => set((state) => {
         if (!state.currentListId) return state;
         const list = state.lists.find(l => l.id === state.currentListId);
         
@@ -163,8 +163,8 @@ export const useShoppingStore = create<ShoppingStore>()(
           id: uuidv4(),
           name,
           category,
-          quantity: 1,
-          promoType: 'Brak',
+          quantity,
+          promoType,
           urgent: false,
           purchased: false,
           listOwnerId: list?.visibility === 'shared' ? auth.currentUser?.uid : undefined,

@@ -388,7 +388,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-2 pb-24 pt-3 relative">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-2 pb-40 pt-3 relative">
         <AnimatePresence mode="wait">
           {items.length === 0 ? (
             <motion.div 
@@ -492,8 +492,8 @@ export default function App() {
     </main>
 
       {/* Fixed Bottom Input */}
-      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent dark:from-zinc-950 dark:via-zinc-950 pb-6 pt-12 z-40 px-4">
-        <div className="max-w-2xl mx-auto relative drop-shadow-xl">
+      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent dark:from-zinc-950 dark:via-zinc-950 pb-6 pt-12 z-40 px-4 pointer-events-none">
+        <div className="max-w-2xl mx-auto relative drop-shadow-xl pointer-events-auto">
           <ProductInput />
         </div>
       </div>

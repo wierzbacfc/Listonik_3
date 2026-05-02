@@ -1,16 +1,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from '../data/catalog';
 
-export const testGeminiApiKey = async (apiKey: string): Promise<boolean> => {
+export const testGeminiApiKey = async (): Promise<boolean> => {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return false;
   try {
     const ai = new GoogleGenAI({ apiKey });
     await ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
-      contents: "Test",
+      contents: "Test connection",
     });
     return true;
   } catch (error) {
+    console.error("Gemini connection test failed:", error);
     return false;
   }
 };
