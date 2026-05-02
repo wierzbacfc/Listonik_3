@@ -7,7 +7,7 @@ export const testGeminiApiKey = async (userKey?: string): Promise<boolean> => {
   try {
     const ai = new GoogleGenAI({ apiKey });
     await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-2.5-flash",
       contents: "Test connection",
     });
     return true;
@@ -35,7 +35,7 @@ export const classifyProductWithGemini = async (productName: string, userKey?: s
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: `User wants to add a shopping item named: "${productName}". 
 Assign it to the most appropriate category from the following list: ${categories.join(', ')}. 
 Respond ONLY with the category name exactly as written in the list.`,

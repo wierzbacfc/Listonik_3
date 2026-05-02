@@ -17,31 +17,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [testResult, setTestResult] = useState<'none' | 'success' | 'error'>('none');
   const { user, signIn, signOut } = useAuth();
 
-  useEffect(() => {
-    setApiKeyInput(preferences.geminiApiKey);
-    if (isOpen && testResult === 'none') {
-      handleTestKey();
-    }
-  }, [isOpen, preferences.geminiApiKey]);
-
-  const handleSave = () => {
-    setGeminiApiKey(apiKeyInput.trim());
-    onClose();
-  };
-
-  const handleTestKey = async () => {
-    if (!apiKeyInput.trim()) return;
+  const handleTestKey = async (keyToTest?: string) => {
+    const key = (keyToTest !== undefined ? keyToTest : apiKeyInput).trim();
+    if (!key) return;
     setIsTestLoading(true);
     setTestResult('none');
     try {
       const { testGeminiApiKey } = await import('../lib/gemini');
-      const isValid = await testGeminiApiKey(apiKeyInput.trim());
+      const isValid = await testGeminiApiKey(key);
       setTestResult(isValid ? 'success' : 'error');
     } catch {
       setTestResult('error');
     } finally {
       setIsTestLoading(false);
     }
+  };
+
+  useEffect(() => {
+    setApiKeyInput(preferences.geminiApiKey);
+    if (isOpen && testResult === 'none' && preferences.geminiApiKey) {
+      handleTestKey(preferences.geminiApiKey);
+    }
+  }, [isOpen, preferences.geminiApiKey]);
+
+  const handleSave = () => {
+    setGeminiApiKey(apiKeyInput.trim());
+    onClose();
   };
 
   return (
@@ -192,6 +193,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       value={apiKeyInput}
                       onChange={(e) => setApiKeyInput(e.target.value)}
                       placeholder="Wprowadź klucz Gemini API..."
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
                       className="flex-1 min-w-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
                     />
                     <button
@@ -255,7 +260,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 Zapisz ustawienia
               </button>
               <div className="mt-2 text-center text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                Wersja 0.0.99
+                Wersja 0.1.00
               </div>
             </div>
           </motion.div>
